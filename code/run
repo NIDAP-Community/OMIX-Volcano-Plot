@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# OMIX Volcano - Reproducible Run entrypoint
+# Passes all App Panel parameters to main.R as named CLI arguments
+
+cd /code
+Rscript main.R "$@"

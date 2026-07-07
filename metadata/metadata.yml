@@ -1,0 +1,20 @@
+metadata_version: 1
+name: OMIX Volcano Plot
+description: Generate publication-ready volcano plots from differential expression
+  analysis results. Visualizes statistical significance versus fold change with customizable
+  colors, gene labels, and axis capping. Supports flexible data input via file upload
+  or data asset attachment. Accepts RDS, CSV, and TSV formats with automatic column
+  detection. Part of the OMIX analysis suite for reproducible bioinformatics workflows.
+tags:
+- OMIX
+- Volcano plot
+- Differential expression
+- visualization
+- Bulk RNA-seq
+- bioinformatics
+- R
+- ggplot2
+- RNA-seq
+- gene expression
+authors:
+- name: Maggie Cam
