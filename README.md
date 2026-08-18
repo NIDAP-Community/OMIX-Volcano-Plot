@@ -38,6 +38,18 @@ This tool visualizes differential gene expression data as volcano plots, helping
 
 **Note:** If you upload a file, it takes priority over the attached data asset.
 
+### Use a Connected OMIX Workflow
+
+When this capsule follows an upstream OMIX workflow, leave **Upload DEG File**
+blank. It recursively searches `/data` for exactly one CSV whose filename
+contains `DEG`—normally `DEG_Analysis.csv`—and uses it as the input. The
+workflow table must contain a gene identifier plus matching `*_pval` and
+`*_logFC` columns. Nominal `*_pval` columns are the default; select
+**adjusted** in the App Panel to use matching adjusted p-value columns.
+
+If multiple matching CSV files are attached, the capsule stops and lists them
+so the upstream connection can be made unambiguous.
+
 ## What Data Do I Need?
 
 Your data file (RDS or CSV) should include these three types of columns:

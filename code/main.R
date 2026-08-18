@@ -72,7 +72,22 @@ parser <- OptionParser(
   description = "Generate enhanced volcano plots from differential expression analysis"
 )
 
-opt <- parse_args(parser, args = commandArgs(trailingOnly = TRUE))
+# Code Ocean passes --param "" for blank uploads. Remove those pairs before
+# optparse sees them, because an empty file value is not a usable path.
+args <- commandArgs(trailingOnly = TRUE)
+filtered_args <- character()
+index <- 1L
+while (index <= length(args)) {
+  if (args[[index]] == "") {
+    index <- index + 1L
+  } else if (index < length(args) && startsWith(args[[index]], "--") && args[[index + 1L]] == "") {
+    index <- index + 2L
+  } else {
+    filtered_args <- c(filtered_args, args[[index]])
+    index <- index + 1L
+  }
+}
+opt <- parse_args(parser, args = filtered_args)
 
 # Convert string booleans to logical
 opt$label_only_my_feature_list <- tolower(opt$label_only_my_feature_list) == "true"
@@ -81,40 +96,68 @@ opt$use_custom_axis_label <- tolower(opt$use_custom_axis_label) == "true"
 opt$use_auto_axis_capping <- tolower(opt$use_auto_axis_capping) == "true"
 opt$auto_axis_capping_symmetric_x <- tolower(opt$auto_axis_capping_symmetric_x) == "true"
 
-# Find and read DEG table: uploaded file > data asset > example data (like L2P)
+# Find and read DEG table: uploaded file > workflow CSV > data asset > example data.
 # Supports both RDS and CSV/TSV/TXT files
 
 deg_data <- NULL
 deg_table_path <- NULL
+
+load_deg_file <- function(path) {
+  file_ext <- tolower(tools::file_ext(path))
+  if (file_ext == "rds") {
+    data <- readRDS(path)
+    if (is.list(data) && !is.data.frame(data)) {
+      df_elements <- vapply(data, is.data.frame, logical(1))
+      if (!any(df_elements)) {
+        stop("ERROR: RDS file does not contain a data frame")
+      }
+      data <- data[[which(df_elements)[1L]]]
+      message("Extracted data frame from list")
+    }
+    return(data)
+  }
+  if (file_ext == "csv") {
+    return(read.csv(path, stringsAsFactors = FALSE, check.names = FALSE))
+  }
+  read.delim(path, stringsAsFactors = FALSE, check.names = FALSE)
+}
+
+source(file.path(runtime_root, "code", "functions", "workflow_input.R"))
 
 # Priority 1: Check for uploaded file
 if (!is.null(opt$deg_file) && opt$deg_file != "" && file.exists(opt$deg_file)) {
   deg_table_path <- opt$deg_file
   message(sprintf("Loading DEG table from uploaded file: %s", deg_table_path))
   
-  file_ext <- tolower(tools::file_ext(deg_table_path))
-  if (file_ext == "rds") {
-    deg_data <- readRDS(deg_table_path)
-    
-    # If RDS contains a list, extract the data frame
-    if (is.list(deg_data) && !is.data.frame(deg_data)) {
-      df_elements <- sapply(deg_data, is.data.frame)
-      if (any(df_elements)) {
-        deg_data <- deg_data[[which(df_elements)[1]]]
-        message("Extracted data frame from list")
-      } else {
-        stop("ERROR: RDS file does not contain a data frame")
-      }
+  deg_data <- load_deg_file(deg_table_path)
+}
+
+# Priority 2: use a durable wide DEG CSV from an upstream Code Ocean workflow.
+if (is.null(deg_data)) {
+  workflow_csv_path <- find_workflow_csv()
+  if (!is.null(workflow_csv_path)) {
+    deg_table_path <- workflow_csv_path
+    deg_data <- load_deg_file(deg_table_path)
+    workflow_columns <- resolve_workflow_volcano_columns(deg_data, opt$pvalue_type)
+    if (is.null(opt$column_with_feature_id) || !nzchar(opt$column_with_feature_id)) {
+      opt$column_with_feature_id <- workflow_columns$column_with_feature_id
     }
-  } else if (file_ext == "csv") {
-    deg_data <- read.csv(deg_table_path, stringsAsFactors = FALSE, check.names = FALSE)
-  } else {
-    # Assume TSV/TXT
-    deg_data <- read.delim(deg_table_path, stringsAsFactors = FALSE, check.names = FALSE)
+    if (is.null(opt$significance_column) || !nzchar(opt$significance_column)) {
+      opt$significance_column <- paste(workflow_columns$significance_columns, collapse = ",")
+    }
+    if (is.null(opt$log2_fold_change_column) || !nzchar(opt$log2_fold_change_column)) {
+      opt$log2_fold_change_column <- paste(workflow_columns$log2_fold_change_columns, collapse = ",")
+    }
+    message(
+      "Loading workflow DEG table: ", deg_table_path,
+      "\n  Feature=", opt$column_with_feature_id,
+      "; p-value=", opt$significance_column,
+      "; log2FC=", opt$log2_fold_change_column
+    )
   }
 }
 
-# Priority 2: Check for data asset at /data/deg_table/
+# Priority 3: Check for data asset at /data/deg_table/
 if (is.null(deg_data)) {
   message("Looking for DEG table in /data/deg_table/...")
   rds_files <- list.files("/data/deg_table", pattern = "\\.rds$", full.names = TRUE, recursive = TRUE, ignore.case = TRUE)
@@ -123,33 +166,17 @@ if (is.null(deg_data)) {
   if (length(rds_files) > 0) {
     deg_table_path <- rds_files[1]
     message(sprintf("Loading DEG table from RDS file: %s", deg_table_path))
-    deg_data <- readRDS(deg_table_path)
-    
-    # If RDS contains a list, extract the data frame
-    if (is.list(deg_data) && !is.data.frame(deg_data)) {
-      df_elements <- sapply(deg_data, is.data.frame)
-      if (any(df_elements)) {
-        deg_data <- deg_data[[which(df_elements)[1]]]
-        message("Extracted data frame from list")
-      } else {
-        stop("ERROR: RDS file does not contain a data frame")
-      }
-    }
+    deg_data <- load_deg_file(deg_table_path)
     
   } else if (length(csv_files) > 0) {
     deg_table_path <- csv_files[1]
     message(sprintf("Loading DEG table from CSV/TSV file: %s", deg_table_path))
     
-    file_ext <- tolower(tools::file_ext(deg_table_path))
-    if (file_ext == "csv") {
-      deg_data <- read.csv(deg_table_path, stringsAsFactors = FALSE, check.names = FALSE)
-    } else {
-      deg_data <- read.delim(deg_table_path, stringsAsFactors = FALSE, check.names = FALSE)
-    }
+    deg_data <- load_deg_file(deg_table_path)
   }
 }
 
-# Priority 3: Fallback to example data
+# Priority 4: Fallback to example data
 if (is.null(deg_data)) {
   example_path <- file.path(runtime_root, "data", "example_inputs", "deg_table.csv")
   if (file.exists(example_path)) {

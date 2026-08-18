@@ -3,13 +3,13 @@
 	"named_parameters": true,
 	"general": {
 		"title": "OMIX Volcano Plot",
-		"instructions": "Generate enhanced volcano plots from differential expression analysis results.\n\n**Data Input:** Upload a file OR attach a DEG table data asset (RDS/CSV/TSV).\n**Column Auto-Detection:** Leave column selection parameters blank for automatic detection.\n**Example data:** Example DEG table is pre-loaded in /data/example_inputs/ for demo purposes."
+		"instructions": "Generate enhanced volcano plots from differential expression analysis results.\n\n**Data Input:** Upload a file OR attach a DEG table data asset (RDS/CSV/TSV). When connected to an upstream workflow, leave the upload blank: the capsule finds exactly one CSV with 'DEG' in its filename under /data.\n**Column Auto-Detection:** Leave column selection parameters blank for automatic detection.\n**Example data:** Example DEG table is pre-loaded in /data/example_inputs/ for demo purposes."
 	},
 	"datasets": [
 		{
 			"id": "28035d52-03e6-4761-8f50-72d48af496d1",
 			"name": "DEG Table",
-			"help_text": "Data asset containing differential expression results (supports RDS or CSV/TSV formats). Must include gene names, p-values, and log2 fold changes."
+			"help_text": "Data asset containing differential expression results (supports RDS or CSV/TSV formats). For a connected upstream workflow, the durable input is one CSV whose filename contains 'DEG'. It must include gene names, p-values, and log2 fold changes."
 		}
 	],
 	"categories": [
