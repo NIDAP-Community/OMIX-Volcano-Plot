@@ -2,6 +2,14 @@
 
 Create publication-ready volcano plots from your differential expression analysis results.
 
+## Related repositories
+
+This repository is the **Code Ocean deployment adapter** for Volcano Plot. The
+platform-neutral source, CLI, tests, and interface schema are maintained in
+the canonical [OMIX Volcano Plot module](https://github.com/NIDAP-Community/OMIX/tree/main/modules/OMIX-Volcano-Plot).
+Read the [OMIX module contract](https://github.com/NIDAP-Community/OMIX/blob/main/docs/module-contract.md#code-ocean-deployment-adapters)
+before changing shared scientific behavior.
+
 ## What Does This Do?
 
 This tool visualizes differential gene expression data as volcano plots, helping you identify significantly up-regulated and down-regulated genes at a glance. Upload your DEG file or attach a data asset and get beautiful, customizable plots in seconds.
