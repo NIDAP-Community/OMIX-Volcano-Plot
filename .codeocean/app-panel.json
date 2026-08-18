@@ -68,7 +68,7 @@
 			"category": "basic",
 			"name": "Gene ID Column (Optional)",
 			"param_name": "column_with_feature_id",
-			"help_text": "Column name containing gene/feature IDs. Leave blank for automatic detection (looks for 'Gene', 'Feature_ID', etc.).",
+			"help_text": "Column name containing gene symbols or other feature IDs. Leave blank for the OMIX default: it prefers 'GeneName', then 'Gene Symbols', then common identifier names. Code Ocean cannot populate this control dynamically from an uploaded table; enter the exact column name here to override automatic detection.",
 			"type": "text",
 			"value_type": "string"
 		},

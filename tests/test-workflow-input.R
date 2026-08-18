@@ -42,6 +42,13 @@ stopifnot(
   identical(adjusted$log2_fold_change_columns, c("B-A_logFC", "C-A_logFC"))
 )
 
+gene_symbols_table <- deg_table
+names(gene_symbols_table)[names(gene_symbols_table) == "GeneName"] <- "Gene Symbols"
+stopifnot(identical(
+  resolve_workflow_volcano_columns(gene_symbols_table, "nominal")$column_with_feature_id,
+  "Gene Symbols"
+))
+
 second_deg <- file.path(workflow_dir, "another_DEG_table.csv")
 write.csv(data.frame(x = 1), second_deg, row.names = FALSE)
 expect_error(find_workflow_csv(fixture), "Multiple workflow DEG CSV files")

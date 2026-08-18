@@ -38,6 +38,12 @@ This tool visualizes differential gene expression data as volcano plots, helping
 
 **Note:** If you upload a file, it takes priority over the attached data asset.
 
+The Gene ID Column accepts the column containing the symbols to print and
+label. Leave it blank for automatic detection: Volcano prefers `GeneName`
+(the OMIX workflow contract), then `Gene Symbols`, then common generic
+identifier names. For another table, enter its exact column name in the App
+Panel; Code Ocean does not provide a dynamic column dropdown for uploaded data.
+
 ### Use a Connected OMIX Workflow
 
 When this capsule follows an upstream OMIX workflow, leave **Upload DEG File**

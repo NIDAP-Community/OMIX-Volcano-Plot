@@ -75,7 +75,7 @@ resolve_workflow_volcano_columns <- function(df, pvalue_type = "nominal") {
   }
 
   feature_column <- first_existing_column(
-    c("GeneName", "Gene", "gene_name", "gene_symbol", "GeneSymbol", "Feature_ID", "FeatureID"),
+    c("GeneName", "Gene Symbols", "Gene", "gene_name", "gene_symbol", "GeneSymbol", "Feature_ID", "FeatureID"),
     available_cols
   )
   missing <- c(
