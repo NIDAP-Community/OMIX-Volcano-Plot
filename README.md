@@ -2,13 +2,24 @@
 
 Create publication-ready volcano plots from your differential expression analysis results.
 
-## Related repositories
+## Canonical OMIX module
 
-This repository is the **Code Ocean deployment adapter** for Volcano Plot. The
-platform-neutral source, CLI, tests, and interface schema are maintained in
-the canonical [OMIX Volcano Plot module](https://github.com/NIDAP-Community/OMIX/tree/main/modules/OMIX-Volcano-Plot).
-Read the [OMIX module contract](https://github.com/NIDAP-Community/OMIX/blob/main/docs/module-contract.md#code-ocean-deployment-adapters)
-before changing shared scientific behavior.
+| Item | Location |
+| --- | --- |
+| Canonical module | [OMIX Volcano Plot](https://github.com/NIDAP-Community/OMIX/tree/main/modules/OMIX-Volcano-Plot) |
+| Interface contract | [schemas/interface.yml](https://github.com/NIDAP-Community/OMIX/blob/main/modules/OMIX-Volcano-Plot/schemas/interface.yml) |
+| Development contract | [OMIX module contract](https://github.com/NIDAP-Community/OMIX/blob/main/docs/module-contract.md) |
+| Released source reference | [OMIX_MODULE_SOURCE.md](OMIX_MODULE_SOURCE.md) |
+
+The canonical module owns scientific behavior, portable CLI operation, tests,
+and the reusable input/output contract. This repository is its Code Ocean
+deployment adapter.
+
+## What this deployment adds
+
+- The Code Ocean App Panel and capsule entry point.
+- Uploaded and attached DEG-table discovery under `/data`.
+- Capsule outputs under `/results` and the pinned runtime configuration.
 
 ## What Does This Do?
 
@@ -124,4 +135,9 @@ If you use this tool in your research, please cite the OMIX Volcano Plot capsule
 
 ---
 
-**For developers:** Technical implementation details are available in `/code/DEVELOPER.md`
+## For developers
+
+Read [AGENTS.md](AGENTS.md) and [OMIX_MODULE_SOURCE.md](OMIX_MODULE_SOURCE.md)
+before editing. Technical implementation details are available in
+[`code/DEVELOPER.md`](code/DEVELOPER.md). Reusable scientific changes belong in
+the canonical OMIX module and are exported here only after validation.
