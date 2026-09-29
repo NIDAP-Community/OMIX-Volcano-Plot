@@ -282,8 +282,7 @@ result <- volcano_plot_enhanced(
 write.csv(
   result,
   file.path(results_dir, "volcano_plot_data.csv"),
-  row.names = FALSE,
-  na = ""
+  row.names = FALSE
 )
 
 # Clean up default Rplots.pdf if created
