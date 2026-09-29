@@ -22,10 +22,10 @@ get_script_dir <- function() {
 
 runtime_root <- normalizePath(file.path(get_script_dir(), ".."), mustWork = TRUE)
 
-# Define CLI options
-# Note: DEG table can be uploaded via --deg_file or read from data asset at /data/deg_table/ (supports RDS/CSV/TSV)
+# Canonical interface controls plus one hidden deprecated adapter alias.
 option_list <- list(
-  make_option("--deg_file", type = "character", default = NULL),
+  make_option("--deg_table", type = "character", default = NULL),
+  make_option("--output_dir", type = "character", default = "results"),
   make_option("--pvalue_type", type = "character", default = "nominal"),
   make_option("--column_with_feature_id", type = "character", default = NULL),
   make_option("--significance_column", type = "character", default = NULL),
@@ -59,15 +59,21 @@ option_list <- list(
   make_option("--point_size", type = "double", default = 2),
   make_option("--image_width", type = "integer", default = 3000),
   make_option("--image_height", type = "integer", default = 3000),
-  make_option("--resolution_dpi_", type = "integer", default = 300),
+  make_option("--resolution_dpi", type = "integer", default = 300),
   make_option("--color_not_significant", type = "character", default = "gray"),
   make_option("--color_fold_change_only", type = "character", default = "orange"),
   make_option("--color_significant_only", type = "character", default = "green4"),
-  make_option("--color_significant_and_fold_change", type = "character", default = "red3")
+  make_option("--color_significant_and_fold_change", type = "character", default = "red3"),
+  make_option(
+    "--resolution_dpi_",
+    type = "integer",
+    default = NULL,
+    help = "Deprecated Code Ocean compatibility alias; use --resolution_dpi"
+  )
 )
 
 parser <- OptionParser(
-  usage = "Usage: %prog [options]\nDEG table can be uploaded via --deg_file or read from data asset at /data/deg_table/",
+  usage = "Usage: %prog [options]\nDEG table can be uploaded via --deg_table or discovered from attached data.",
   option_list = option_list,
   description = "Generate enhanced volcano plots from differential expression analysis"
 )
@@ -89,12 +95,39 @@ while (index <= length(args)) {
 }
 opt <- parse_args(parser, args = filtered_args)
 
-# Convert string booleans to logical
-opt$label_only_my_feature_list <- tolower(opt$label_only_my_feature_list) == "true"
-opt$top_genes_labeled_only_if_passing_thresholds <- tolower(opt$top_genes_labeled_only_if_passing_thresholds) == "true"
-opt$use_custom_axis_label <- tolower(opt$use_custom_axis_label) == "true"
-opt$use_auto_axis_capping <- tolower(opt$use_auto_axis_capping) == "true"
-opt$auto_axis_capping_symmetric_x <- tolower(opt$auto_axis_capping_symmetric_x) == "true"
+as_logical <- function(value, option_name) {
+  normalized <- tolower(trimws(value))
+  if (!normalized %in% c("true", "false")) {
+    stop("ERROR: `--", option_name, "` must be true or false")
+  }
+  identical(normalized, "true")
+}
+
+as_columns <- function(value) {
+  if (is.null(value) || !nzchar(trimws(value))) return(NULL)
+  trimws(strsplit(value, ",", fixed = TRUE)[[1L]])
+}
+
+opt$label_only_my_feature_list <- as_logical(
+  opt$label_only_my_feature_list,
+  "label_only_my_feature_list"
+)
+opt$top_genes_labeled_only_if_passing_thresholds <- as_logical(
+  opt$top_genes_labeled_only_if_passing_thresholds,
+  "top_genes_labeled_only_if_passing_thresholds"
+)
+opt$use_custom_axis_label <- as_logical(opt$use_custom_axis_label, "use_custom_axis_label")
+opt$use_auto_axis_capping <- as_logical(opt$use_auto_axis_capping, "use_auto_axis_capping")
+opt$auto_axis_capping_symmetric_x <- as_logical(
+  opt$auto_axis_capping_symmetric_x,
+  "auto_axis_capping_symmetric_x"
+)
+
+resolved_resolution_dpi <- opt$resolution_dpi
+if (!is.null(opt$resolution_dpi_)) {
+  warning("`--resolution_dpi_` is deprecated; use `--resolution_dpi`.", call. = FALSE)
+  resolved_resolution_dpi <- opt$resolution_dpi_
+}
 
 # Find and read DEG table: uploaded file > workflow CSV > data asset > example data.
 # Supports both RDS and CSV/TSV/TXT files
@@ -122,13 +155,15 @@ load_deg_file <- function(path) {
   read.delim(path, stringsAsFactors = FALSE, check.names = FALSE)
 }
 
-source(file.path(runtime_root, "code", "functions", "workflow_input.R"))
+source(file.path(runtime_root, "code", "adapter", "workflow_input.R"))
 
-# Priority 1: Check for uploaded file
-if (!is.null(opt$deg_file) && opt$deg_file != "" && file.exists(opt$deg_file)) {
-  deg_table_path <- opt$deg_file
-  message(sprintf("Loading DEG table from uploaded file: %s", deg_table_path))
-  
+# Priority 1: use the explicitly selected canonical input.
+if (!is.null(opt$deg_table) && nzchar(opt$deg_table)) {
+  if (!file.exists(opt$deg_table)) {
+    stop("ERROR: DEG table was not found: ", opt$deg_table)
+  }
+  deg_table_path <- normalizePath(opt$deg_table, mustWork = TRUE)
+  message(sprintf("Loading explicitly selected DEG table: %s", deg_table_path))
   deg_data <- load_deg_file(deg_table_path)
 }
 
@@ -157,21 +192,12 @@ if (is.null(deg_data)) {
   }
 }
 
-# Priority 3: Check for data asset at /data/deg_table/
+# Priority 3: use exactly one supported file from the attached DEG data asset.
 if (is.null(deg_data)) {
-  message("Looking for DEG table in /data/deg_table/...")
-  rds_files <- list.files("/data/deg_table", pattern = "\\.rds$", full.names = TRUE, recursive = TRUE, ignore.case = TRUE)
-  csv_files <- list.files("/data/deg_table", pattern = "\\.(csv|tsv|txt)$", full.names = TRUE, recursive = TRUE, ignore.case = TRUE)
-  
-  if (length(rds_files) > 0) {
-    deg_table_path <- rds_files[1]
-    message(sprintf("Loading DEG table from RDS file: %s", deg_table_path))
-    deg_data <- load_deg_file(deg_table_path)
-    
-  } else if (length(csv_files) > 0) {
-    deg_table_path <- csv_files[1]
-    message(sprintf("Loading DEG table from CSV/TSV file: %s", deg_table_path))
-    
+  attached_path <- find_attached_deg_table()
+  if (!is.null(attached_path)) {
+    deg_table_path <- attached_path
+    message(sprintf("Loading attached DEG table: %s", deg_table_path))
     deg_data <- load_deg_file(deg_table_path)
   }
 }
@@ -197,8 +223,12 @@ message(sprintf("Available columns: %s\n", paste(colnames(deg_data), collapse=",
 
 deg_table <- deg_data
 
-# Results directory
-results_dir <- if (dir.exists("/results")) "/results" else file.path(runtime_root, "results")
+# Code Ocean owns /results. Outside Code Ocean, retain the canonical
+# --output_dir default and explicit-path behavior.
+results_dir <- opt$output_dir
+if (dir.exists("/results") && identical(opt$output_dir, "results")) {
+  results_dir <- "/results"
+}
 dir.create(results_dir, recursive = TRUE, showWarnings = FALSE)
 
 # Source volcano plot function
@@ -209,8 +239,8 @@ result <- volcano_plot_enhanced(
   deg_table = deg_table,
   pvalue_type = opt$pvalue_type,
   column_with_feature_id = opt$column_with_feature_id,
-  significance_column = opt$significance_column,
-  log2_fold_change_column = opt$log2_fold_change_column,
+  significance_column = as_columns(opt$significance_column),
+  log2_fold_change_column = as_columns(opt$log2_fold_change_column),
   p_value_threshold = opt$p_value_threshold,
   log2_fold_change_threshold = opt$log2_fold_change_threshold,
   choose_feature_to_label_by = opt$choose_feature_to_label_by,
@@ -241,12 +271,19 @@ result <- volcano_plot_enhanced(
   point_size = opt$point_size,
   image_width = opt$image_width,
   image_height = opt$image_height,
-  resolution_dpi_ = opt$resolution_dpi_,
+  resolution_dpi_ = resolved_resolution_dpi,
   output_file_path = file.path(results_dir, "volcano_plot.png"),
   color_not_significant = opt$color_not_significant,
   color_fold_change_only = opt$color_fold_change_only,
   color_significant_only = opt$color_significant_only,
   color_significant_and_fold_change = opt$color_significant_and_fold_change
+)
+
+write.csv(
+  result,
+  file.path(results_dir, "volcano_plot_data.csv"),
+  row.names = FALSE,
+  na = ""
 )
 
 # Clean up default Rplots.pdf if created

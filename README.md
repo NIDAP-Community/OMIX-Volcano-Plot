@@ -36,7 +36,7 @@ This tool visualizes differential gene expression data as volcano plots, helping
 ### Use Your Own Data
 
 **Option 1: Upload a File**
-1. Click on **Upload DEG File (Optional)** in the App Panel
+1. Click **DEG Table File (Optional)** in the App Panel
 2. Select your CSV, TSV, or RDS file
 3. Adjust thresholds and colors as needed
 4. Click **Run**
@@ -57,7 +57,7 @@ Panel; Code Ocean does not provide a dynamic column dropdown for uploaded data.
 
 ### Use a Connected OMIX Workflow
 
-When this capsule follows an upstream OMIX workflow, leave **Upload DEG File**
+When this capsule follows an upstream OMIX workflow, leave **DEG Table File**
 blank. It recursively searches `/data` for exactly one CSV whose filename
 contains `DEG`—normally `DEG_Analysis.csv`—and uses it as the input. The
 workflow table must contain a gene identifier plus matching `*_pval` and
@@ -105,7 +105,7 @@ Your data file (RDS or CSV) should include these three types of columns:
 📄 **Multiple Format Support** - Reads RDS, CSV, and TSV files  
 🔍 **Auto Column Detection** - Automatically finds gene IDs, p-values, and fold changes  
 📊 **Auto Axis Capping** - Reduces outlier impact for better visualization  
-🎨 **Custom Colors** - Select from curated color palettes for each quadrant (organized light to dark for easy selection)  
+🎨 **Custom Colors** - Enter any R-compatible color for each plot category
 🏷️ **Smart Gene Labeling** - Automatically labels top significant genes  
 📐 **Flexible Layout** - Adjust fonts, sizes, and dimensions  
 🔧 **Advanced Controls** - Fine-tune thresholds, axis limits, and label spacing
@@ -121,6 +121,32 @@ Your data file (RDS or CSV) should include these three types of columns:
 - **Volcano plot images** (PNG format, publication-ready at 300 DPI)
 - **One plot per comparison** in your data
 - **Automatically named files** indicating the comparison and p-value type used
+- **`volcano_plot_data.csv`**, containing the input table plus calculated
+  signed significance ranks
+
+Outputs are written under Code Ocean's managed `/results` mount. The portable
+CLI control is `--output_dir`; it is intentionally hidden from the App Panel
+because the platform owns this path.
+
+## Important defaults
+
+- **P-value type:** nominal
+- **P-value threshold:** 0.05
+- **Absolute log2 fold-change threshold:** 1
+- **Maximum label overlaps:** unlimited (`Inf`)
+- **Resolution:** 300 DPI through the public `resolution_dpi` control
+
+The historical CLI spelling `--resolution_dpi_` remains a deprecated hidden
+compatibility alias. New runs and App Panel configurations must use
+`resolution_dpi`.
+
+## Environment and reproducibility
+
+This adapter uses the canonical `r-visualization` runtime profile. The exact
+canonical commit and per-file SHA-256 are recorded in
+[OMIX_MODULE_SOURCE.md](OMIX_MODULE_SOURCE.md). The immutable runtime digest,
+Code Ocean validation record, and adapter release tag are still pending and
+must not be inferred from local tests.
 
 ## Need Help?
 
@@ -138,6 +164,7 @@ If you use this tool in your research, please cite the OMIX Volcano Plot capsule
 ## For developers
 
 Read [AGENTS.md](AGENTS.md) and [OMIX_MODULE_SOURCE.md](OMIX_MODULE_SOURCE.md)
-before editing. Technical implementation details are available in
-[`code/DEVELOPER.md`](code/DEVELOPER.md). Reusable scientific changes belong in
-the canonical OMIX module and are exported here only after validation.
+before editing. Reusable scientific changes belong in the canonical OMIX
+module and are exported here only after validation. Adapter-only input
+discovery belongs in `code/adapter/`, never in the managed
+`code/functions/` export.

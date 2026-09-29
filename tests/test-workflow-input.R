@@ -5,7 +5,7 @@ if (length(script_arg) != 1L) {
   stop("Run this check with Rscript tests/test-workflow-input.R")
 }
 repo_root <- normalizePath(file.path(dirname(sub("^--file=", "", script_arg)), ".."))
-source(file.path(repo_root, "code", "functions", "workflow_input.R"))
+source(file.path(repo_root, "code", "adapter", "workflow_input.R"))
 
 expect_error <- function(expression, pattern) {
   error <- tryCatch({ force(expression); NULL }, error = identity)
@@ -32,6 +32,15 @@ write.csv(deg_table, deg_path, row.names = FALSE)
 write.csv(data.frame(Package = "example"), file.path(workflow_dir, "r-packages.csv"), row.names = FALSE)
 
 stopifnot(identical(normalizePath(find_workflow_csv(fixture)), normalizePath(deg_path)))
+
+asset_dir <- file.path(fixture, "deg_table")
+dir.create(asset_dir)
+asset_path <- file.path(asset_dir, "volcano_input.tsv")
+write.table(deg_table, asset_path, sep = "\t", row.names = FALSE, quote = FALSE)
+stopifnot(identical(
+  normalizePath(find_attached_deg_table(asset_dir)),
+  normalizePath(asset_path)
+))
 nominal <- resolve_workflow_volcano_columns(deg_table, "nominal")
 adjusted <- resolve_workflow_volcano_columns(deg_table, "adjusted")
 stopifnot(
@@ -52,5 +61,8 @@ stopifnot(identical(
 second_deg <- file.path(workflow_dir, "another_DEG_table.csv")
 write.csv(data.frame(x = 1), second_deg, row.names = FALSE)
 expect_error(find_workflow_csv(fixture), "Multiple workflow DEG CSV files")
+
+write.csv(deg_table, file.path(asset_dir, "second_input.csv"), row.names = FALSE)
+expect_error(find_attached_deg_table(asset_dir), "Multiple DEG table files")
 
 message("Volcano workflow-input checks passed")

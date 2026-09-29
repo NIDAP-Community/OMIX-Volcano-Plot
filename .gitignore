@@ -1,1 +1,9 @@
 /data/
+/results/
+/scratch/
+.Rhistory
+.Rproj.user/
+.DS_Store
+*.pem
+*.key
+*.token
