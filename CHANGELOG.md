@@ -13,3 +13,6 @@ belong to the canonical OMIX module and are not maintained in this repository.
 - Document Code Ocean's managed `/results` translation and pending runtime,
   Syncweaver, Beacon, and Code Ocean evidence.
 - Move adapter-only input discovery out of the managed scientific export tree.
+- Record the canonical public `r-visualization` tag and immutable GHCR digest,
+  while keeping the legacy selected Code Ocean image, environment identity,
+  and platform run explicitly pending runtime reconciliation.
