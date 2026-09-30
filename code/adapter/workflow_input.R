@@ -25,6 +25,26 @@ find_workflow_csv <- function(base_dir = "/data") {
   if (length(matches) == 1L) matches[[1L]] else NULL
 }
 
+find_attached_deg_table <- function(base_dir = "/data/deg_table") {
+  if (!dir.exists(base_dir)) return(NULL)
+  candidates <- list.files(
+    base_dir,
+    pattern = "[.](csv|tsv|txt|rds)$",
+    full.names = TRUE,
+    recursive = TRUE,
+    ignore.case = TRUE
+  )
+  candidates <- sort(unique(candidates))
+  if (length(candidates) > 1L) {
+    stop(
+      "ERROR: Multiple DEG table files were found under ", base_dir,
+      ". Select the intended file explicitly with --deg_table:\n",
+      paste(candidates, collapse = "\n")
+    )
+  }
+  if (length(candidates) == 1L) candidates[[1L]] else NULL
+}
+
 first_existing_column <- function(candidates, available_cols) {
   candidates <- candidates[!is.na(candidates) & nzchar(candidates)]
   match <- candidates[candidates %in% available_cols]
