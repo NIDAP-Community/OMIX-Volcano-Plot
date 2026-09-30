@@ -1,44 +1,9 @@
 {
 	"version": 1,
-	"base_image": "codeocean/py-r:python3.10.12-R4.2.3-IRkernel-ubuntu22.04",
+	"base_image": "codeocean/omix-r-visualization:fe132cd082ce9aaf64f925381a92402947de611d",
 	"options": {
 		"registry_host_arg": true,
 		"git_ask_pass": true,
 		"mount_secrets": true
-	},
-	"installers": {
-		"rcran": {
-			"packages": [
-				{
-					"name": "dplyr",
-					"version": "1.2.1"
-				},
-				{
-					"name": "ggplot2",
-					"version": "4.0.3"
-				},
-				{
-					"name": "ggrepel",
-					"version": "0.9.8"
-				},
-				{
-					"name": "jsonlite",
-					"version": "2.0.0"
-				},
-				{
-					"name": "optparse",
-					"version": "1.8.2"
-				},
-				{
-					"name": "stringr",
-					"version": "1.6.0"
-				},
-				{
-					"name": "tidyr",
-					"version": "1.3.2"
-				}
-			],
-			"use_rcache": true
-		}
 	}
 }
