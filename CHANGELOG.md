@@ -20,4 +20,10 @@ belong to the canonical OMIX module and are not maintained in this repository.
 - Move adapter-only input discovery out of the managed scientific export tree.
 - Record the canonical public `r-visualization` tag and immutable GHCR digest;
   the Code Ocean environment is selected and builds, while its immutable
-  imported digest and representative platform run remain pending.
+  imported digest remains pending.
+- Record successful linked-capsule validation run `865194` against adapter
+  commit `eb57569a276df25f4364ff27fa4e114497066937`, including the attached
+  DEG input, default named parameters, detected comparisons, output CSV, and
+  three visually inspected plots. The capsule's newline-only
+  `environment.json` working-tree difference, imported Code Ocean digest, and
+  release identifiers remain pending.
