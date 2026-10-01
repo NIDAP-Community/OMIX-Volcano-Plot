@@ -5,6 +5,11 @@ belong to the canonical OMIX module and are not maintained in this repository.
 
 ## Unreleased
 
+- Select the OMIX Visualization v2 Code Ocean starter environment and remove
+  redundant capsule-local R package installation.
+- Treat the special `Inf` label-overlap value as text in the App Panel so Code
+  Ocean accepts the canonical unlimited-overlap default; the R CLI still
+  parses it as a numeric infinity.
 - Export the complete canonical OMIX Volcano Plot R source at commit
   `eee4433cd74d0ce9bd1daba1571ca6312cba7ea2` byte-for-byte.
 - Align the adapter CLI and App Panel with canonical interface version 1,
@@ -13,6 +18,6 @@ belong to the canonical OMIX module and are not maintained in this repository.
 - Document Code Ocean's managed `/results` translation and pending runtime,
   Syncweaver, Beacon, and Code Ocean evidence.
 - Move adapter-only input discovery out of the managed scientific export tree.
-- Record the canonical public `r-visualization` tag and immutable GHCR digest,
-  while keeping the legacy selected Code Ocean image, environment identity,
-  and platform run explicitly pending runtime reconciliation.
+- Record the canonical public `r-visualization` tag and immutable GHCR digest;
+  the Code Ocean environment is selected and builds, while its immutable
+  imported digest and representative platform run remain pending.
