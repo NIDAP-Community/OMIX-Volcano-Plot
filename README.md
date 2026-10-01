@@ -144,9 +144,15 @@ compatibility alias. New runs and App Panel configurations must use
 
 This adapter uses the canonical `r-visualization` runtime profile. The exact
 canonical commit and per-file SHA-256 are recorded in
-[OMIX_MODULE_SOURCE.md](OMIX_MODULE_SOURCE.md). The immutable runtime digest,
-Code Ocean validation record, and adapter release tag are still pending and
-must not be inferred from local tests.
+[OMIX_MODULE_SOURCE.md](OMIX_MODULE_SOURCE.md). Code Ocean run `865194` in
+capsule `7447171` validated the default named-parameter workflow against exact
+adapter commit `eb57569a276df25f4364ff27fa4e114497066937`. The capsule also
+reported one uncommitted `environment.json` newline-only difference, which
+does not alter the selected runtime but must be reconciled before release. The
+run loaded the attached 10,514-row DEG table, generated the augmented CSV, and
+rendered one plot for each of the three detected comparisons. The imported
+Code Ocean environment digest, platform release, and adapter tag remain
+pending and must not be inferred from that successful run.
 
 ## Need Help?
 

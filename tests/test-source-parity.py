@@ -20,7 +20,10 @@ observed_sha = hashlib.sha256(managed_files[0].read_bytes()).hexdigest()
 assert observed_sha == EXPECTED_SHA
 assert EXPECTED_COMMIT in SOURCE_RECORD
 assert EXPECTED_SHA in SOURCE_RECORD
-assert "Pending Code Ocean validation" in SOURCE_RECORD
+assert '"run_id":"865194"' in SOURCE_RECORD
+assert '"adapter_commit":"eb57569a276df25f4364ff27fa4e114497066937"' in SOURCE_RECORD
+assert "successful validation is not a released capsule version" in SOURCE_RECORD
+assert "Pending Code Ocean resolution" in SOURCE_RECORD
 assert "OMIX issue #43" in SOURCE_RECORD
 assert "code/adapter/workflow_input.R" in SOURCE_RECORD
 

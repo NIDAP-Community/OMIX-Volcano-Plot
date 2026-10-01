@@ -40,7 +40,7 @@ permitted.
 
 <!-- omix-adapter-contract: {"aliases": {}, "hidden_inputs": [{"canonical": "output_dir", "binding": "Code Ocean /results; code/main.R maps the canonical default results to /results when the managed mount exists"}]} -->
 
-<!-- omix-runtime-provenance: {"runtime_profile":"r-visualization","published_image":"ghcr.io/nidap-community/omix-r-visualization","published_tag":"r4.4.3-v2","published_digest":"sha256:1d9f453b49412aa05e9d3420cd4b1b4ea0beac4923cb40572af38b0ae2a46830","published_immutable_reference":"ghcr.io/nidap-community/omix-r-visualization@sha256:1d9f453b49412aa05e9d3420cd4b1b4ea0beac4923cb40572af38b0ae2a46830","adapter_base_image":"codeocean/omix-r-visualization:r4.4.3-v2","adapter_base_image_digest":null,"adapter_digest_status":"pending_code_ocean_resolution","runtime_profile_alignment_status":"selected_pending_platform_validation","code_ocean_environment_id":"OMIX Visualization v2","capsule_run":null} -->
+<!-- omix-runtime-provenance: {"runtime_profile":"r-visualization","published_image":"ghcr.io/nidap-community/omix-r-visualization","published_tag":"r4.4.3-v2","published_digest":"sha256:1d9f453b49412aa05e9d3420cd4b1b4ea0beac4923cb40572af38b0ae2a46830","published_immutable_reference":"ghcr.io/nidap-community/omix-r-visualization@sha256:1d9f453b49412aa05e9d3420cd4b1b4ea0beac4923cb40572af38b0ae2a46830","adapter_base_image":"codeocean/omix-r-visualization:r4.4.3-v2","adapter_base_image_digest":null,"adapter_digest_status":"pending_code_ocean_resolution","runtime_profile_alignment_status":"validated_code_ocean_run_digest_pending","code_ocean_environment_id":"OMIX Visualization v2","capsule_run":{"capsule_id":"7447171","run_id":"865194","date":"2026-10-01","adapter_commit":"eb57569a276df25f4364ff27fa4e114497066937","dataset_id":"28035d52-03e6-4761-8f50-72d48af496d1"}} -->
 
 ## Adapter release record
 
@@ -48,14 +48,44 @@ permitted.
 | --- | --- |
 | Adapter version | Pending — baseline tag not yet established. |
 | Adapter release tag | Pending. |
-| Platform release | Pending Code Ocean validation; local tests are not platform evidence. |
+| Platform release | Pending — successful validation is not a released capsule version. |
 | Canonical runtime profile | `r-visualization`, as declared by the canonical module. |
 | Published OMIX runtime | Tag `ghcr.io/nidap-community/omix-r-visualization:r4.4.3-v2`; immutable public identity `ghcr.io/nidap-community/omix-r-visualization@sha256:1d9f453b49412aa05e9d3420cd4b1b4ea0beac4923cb40572af38b0ae2a46830`. |
 | Adapter-selected base image | `codeocean/omix-r-visualization:r4.4.3-v2` from `.codeocean/environment.json`; it aligns by profile and tag, while the imported Code Ocean image digest remains **Pending Code Ocean resolution**. |
 | Runtime build evidence | [Starter Environments run 33779788678](https://github.com/NIDAP-Community/OMIX/actions/runs/33779788678) built, verified, inventoried, and published `r-visualization:v2`; [GHCR version 1205968442](https://github.com/orgs/NIDAP-Community/packages/container/omix-r-visualization/1205968442) independently maps the version tag to the recorded digest. Post-publication package-set re-verification remains pending in the canonical release manifest. |
-| Code Ocean environment identity | `OMIX Visualization v2` / image version `2` selected in capsule `7447171`; an immutable environment-release identifier remains **Pending**. |
-| Capsule run | A representative Code Ocean run using the canonical runtime profile is **Pending**; GitHub or local checks are not platform validation. |
+| Code Ocean environment identity | Capsule `7447171` selected **OMIX Visualization 2 (2)** with base tag `codeocean/omix-r-visualization:r4.4.3-v2`; an immutable environment-release identifier remains **Pending**. |
+| Capsule run | Run `865194` completed successfully on October 1, 2026, from exact adapter commit `eb57569a276df25f4364ff27fa4e114497066937`. |
 | Syncweaver lock | Pending generated mapping under [OMIX issue #44](https://github.com/NIDAP-Community/OMIX/issues/44); do not hand-author `.syncweaver-lock.json`. |
+
+### Code Ocean validation evidence
+
+- **Capsule:** `7447171` (linked to this GitHub repository)
+- **Run:** `865194`, completed October 1, 2026 in 15 seconds
+- **Source state:** commit `eb57569a276df25f4364ff27fa4e114497066937`;
+  Code Ocean also displayed one uncommitted `environment.json` newline-only
+  difference. Its parsed configuration matched the tracked file, but the
+  working tree must be reconciled before release.
+- **Input:** attached `deg_table` asset
+  `28035d52-03e6-4761-8f50-72d48af496d1`; loaded
+  `/data/deg_table/var_DEGAnalysis.rds` with 10,514 rows and 25 columns
+- **Parameters:** default named parameters, including nominal p-values at
+  `0.05`, absolute log2 fold-change threshold `1`, 30 labels, unlimited
+  overlap (`Inf`), automatic axis capping, 3,000 by 3,000 pixels, and 300 DPI
+- **Comparisons detected:** `B-A`, `C-A`, and `B-C`, using their matching
+  `*_pval` and `*_logFC` columns
+- **Outputs inspected:** `volcano_plot_data.csv` (4.87 MB) and three nonempty
+  PNGs: `volcano_plot_volcano_B_A_pval.png` (1016.53 KB),
+  `volcano_plot_volcano_B_C_pval.png` (1.1 MB), and
+  `volcano_plot_volcano_C_A_pval.png` (1.23 MB). All three plots rendered
+  coherently with comparison-specific axes, thresholds, categories, and gene
+  labels. The Code Ocean viewer established the CSV's presence and size; the
+  repository's adapter fixture separately verifies row preservation and
+  literal `NA` serialization.
+
+This establishes representative platform behavior for the recorded commit and
+tag-selected environment, subject to the explicitly recorded newline-only
+working-tree difference. It does not establish the imported environment's
+immutable digest, a capsule release, an adapter tag, or release approval.
 
 The public image identity above is also recorded in the canonical
 [`release-manifest.json`](https://github.com/NIDAP-Community/OMIX/blob/eee4433cd74d0ce9bd1daba1571ca6312cba7ea2/starter-environments/release-manifest.json).
