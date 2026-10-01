@@ -40,7 +40,7 @@ permitted.
 
 <!-- omix-adapter-contract: {"aliases": {}, "hidden_inputs": [{"canonical": "output_dir", "binding": "Code Ocean /results; code/main.R maps the canonical default results to /results when the managed mount exists"}]} -->
 
-<!-- omix-runtime-provenance: {"runtime_profile":"r-visualization","published_image":"ghcr.io/nidap-community/omix-r-visualization","published_tag":"r4.4.3-v2","published_digest":"sha256:1d9f453b49412aa05e9d3420cd4b1b4ea0beac4923cb40572af38b0ae2a46830","published_immutable_reference":"ghcr.io/nidap-community/omix-r-visualization@sha256:1d9f453b49412aa05e9d3420cd4b1b4ea0beac4923cb40572af38b0ae2a46830","adapter_base_image":"codeocean/py-r:python3.10.12-R4.2.3-IRkernel-ubuntu22.04","adapter_base_image_digest":null,"adapter_digest_status":"pending_code_ocean_resolution","runtime_profile_alignment_status":"pending_runtime_reconciliation","code_ocean_environment_id":null,"capsule_run":null} -->
+<!-- omix-runtime-provenance: {"runtime_profile":"r-visualization","published_image":"ghcr.io/nidap-community/omix-r-visualization","published_tag":"r4.4.3-v2","published_digest":"sha256:1d9f453b49412aa05e9d3420cd4b1b4ea0beac4923cb40572af38b0ae2a46830","published_immutable_reference":"ghcr.io/nidap-community/omix-r-visualization@sha256:1d9f453b49412aa05e9d3420cd4b1b4ea0beac4923cb40572af38b0ae2a46830","adapter_base_image":"codeocean/omix-r-visualization:r4.4.3-v2","adapter_base_image_digest":null,"adapter_digest_status":"pending_code_ocean_resolution","runtime_profile_alignment_status":"selected_pending_platform_validation","code_ocean_environment_id":"OMIX Visualization v2","capsule_run":null} -->
 
 ## Adapter release record
 
@@ -51,9 +51,9 @@ permitted.
 | Platform release | Pending Code Ocean validation; local tests are not platform evidence. |
 | Canonical runtime profile | `r-visualization`, as declared by the canonical module. |
 | Published OMIX runtime | Tag `ghcr.io/nidap-community/omix-r-visualization:r4.4.3-v2`; immutable public identity `ghcr.io/nidap-community/omix-r-visualization@sha256:1d9f453b49412aa05e9d3420cd4b1b4ea0beac4923cb40572af38b0ae2a46830`. |
-| Adapter-selected base image | `codeocean/py-r:python3.10.12-R4.2.3-IRkernel-ubuntu22.04` from `.codeocean/environment.json`; this legacy selection does **not** align with the canonical runtime profile and its digest is **Pending Code Ocean resolution**. |
+| Adapter-selected base image | `codeocean/omix-r-visualization:r4.4.3-v2` from `.codeocean/environment.json`; it aligns by profile and tag, while the imported Code Ocean image digest remains **Pending Code Ocean resolution**. |
 | Runtime build evidence | [Starter Environments run 33779788678](https://github.com/NIDAP-Community/OMIX/actions/runs/33779788678) built, verified, inventoried, and published `r-visualization:v2`; [GHCR version 1205968442](https://github.com/orgs/NIDAP-Community/packages/container/omix-r-visualization/1205968442) independently maps the version tag to the recorded digest. Post-publication package-set re-verification remains pending in the canonical release manifest. |
-| Code Ocean environment identity | **Pending** — no immutable environment-release identifier is recorded. |
+| Code Ocean environment identity | `OMIX Visualization v2` / image version `2` selected in capsule `7447171`; an immutable environment-release identifier remains **Pending**. |
 | Capsule run | A representative Code Ocean run using the canonical runtime profile is **Pending**; GitHub or local checks are not platform validation. |
 | Syncweaver lock | Pending generated mapping under [OMIX issue #44](https://github.com/NIDAP-Community/OMIX/issues/44); do not hand-author `.syncweaver-lock.json`. |
 

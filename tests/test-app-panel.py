@@ -2,6 +2,7 @@
 """Check the Code Ocean parameter surface against canonical interface v1."""
 
 import json
+import math
 import re
 from pathlib import Path
 
@@ -62,10 +63,19 @@ assert len(by_name) == len(parameters), "duplicate App Panel parameter name"
 
 assert by_name["pvalue_type"]["extra_data"] == ["nominal", "adjusted"]
 assert by_name["pvalue_type"]["default_value"] == "nominal"
+assert by_name["label_max_overlaps"]["value_type"] == "string"
 assert by_name["label_max_overlaps"]["default_value"] == "Inf"
 assert by_name["resolution_dpi"]["default_value"] == "300"
 assert "resolution_dpi_" not in by_name
 assert "output_dir" not in by_name  # Code Ocean owns /results; provenance records this binding.
+
+# Code Ocean validates number-valued text inputs as finite browser numbers.
+# Special R values such as Inf must therefore use a string-valued field even
+# when the adapter later parses them as numeric CLI arguments.
+for item in parameters:
+    if item.get("type") == "text" and item.get("value_type") == "number":
+        value = float(item["default_value"])
+        assert math.isfinite(value), f"non-finite numeric App Panel default: {item['param_name']}"
 
 for name in (
     "color_not_significant",

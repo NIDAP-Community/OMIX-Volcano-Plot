@@ -207,9 +207,9 @@
 			"name": "Label Max Overlaps",
 			"param_name": "label_max_overlaps",
 			"type": "text",
-			"value_type": "number",
+			"value_type": "string",
 			"default_value": "Inf",
-			"description": "Maximum overlapping labels allowed. The default Inf preserves all selected labels; enter a finite number to permit automatic overlap suppression."
+			"description": "Maximum overlapping labels allowed. Enter Inf to preserve all selected labels, or a finite number to permit automatic overlap suppression."
 		},
 		{
 			"id": "vAonHGph4QXzY45T",
